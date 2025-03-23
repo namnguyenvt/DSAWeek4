@@ -7,6 +7,7 @@
 
 #include<iostream>
 #include<string>
+#include <stack>
 
 using namespace std;
 
@@ -24,11 +25,19 @@ int main() {
 
 	Board *board = new Board(boardSize);
 
+
 	Player *p1 = new HumanPlayer(1, "Human (Black)");
 	Player *p2 = new HumanPlayer(-1, "Human (White)");
 
+	stack<int> result = checkNeighbours(
+
 	NashGame game(board, p1, p2);
 	game.play();
+
+	while (!result.empty()) {
+		cout << result.top() << " ";
+		result.pop();
+	}
 
 	delete board;
 	delete p1;

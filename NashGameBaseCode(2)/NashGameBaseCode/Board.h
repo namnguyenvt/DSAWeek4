@@ -8,8 +8,19 @@
 #define BOARD_H_
 
 #include <iostream>
+#include <vector>
+#include <stack>
 #include <cstdlib>  // For rand() and srand()
 #include <ctime>    // For time()
+
+using namespace std;
+
+struct Cell {
+public:
+  	int x;
+  	int y;
+	Cell(int x, int y) : x(x), y(y) {}
+};
 
 class Board {
 private:
@@ -71,11 +82,23 @@ public:
 
 	bool validInput(int, int);
 
+    stack<int> checkNeighbours(int player, int x, int y);
+
 	bool isBoardFull();
 
 	void getRandomMove(int &row, int &col);
 
 	bool addMove(int playerType, int x, int y);
+
+    // Task 2.3
+    int getIndex(int x, int y) const;
+
+    int getRow(int index) const;
+
+    int getCol(int index) const;
+	//
+
+    void setCell(int x, int y, int player);
 
 	int checkWinningStatus(int playerType) {
 		//To be implemented
@@ -84,6 +107,64 @@ public:
 
 	void printBoard();
 };
+
+void Board::setCell(int x, int y, int player) {
+	grid[x][y] = player;
+}
+
+// Task 2.3
+int Board::getIndex(int x, int y) const {
+	return x * boardSize + y;
+}
+
+int Board::getRow(int index) const {
+	return index / boardSize;
+}
+
+int Board::getCol(int index) const {
+	return index % boardSize;
+}
+//
+
+// Task 3.3
+stack<int> Board::checkNeighbours(int player, int x, int y) {
+	stack<int> neighbours;
+
+	// Hexagonal neighbors (down-left, down-right, left, right, up-left, up-right)
+	int dx[] = {1, 1, 0, 0, -1, -1};
+	int dy[] = {-1, 0, -1, 1, 0, 1};
+
+	for (int i = 0; i < 6; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize && grid[nx][ny] == player) {
+			int index = nx * boardSize + ny;  // Convert (x, y) to 1D index
+			neighbours.push(index);
+		}
+	}
+
+  	return neighbours;
+}
+
+// Overloaded function to return stack<Cell> instead
+vector<Cell> checkNeighboursCells(int player, int x, int y) {
+	vector<Cell> neighbors;
+
+	int dx[] = {1, 1, 0, 0, -1, -1};
+	int dy[] = {-1, 0, -1, 1, 0, 1};
+
+	for (int i = 0; i < 6; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize && grid[nx][ny] == player) {
+			neighbors.push_back(Cell(nx, ny));
+		}
+	}
+
+	return neighbors;
+}
 
 // Task 3.1
 // void Board::getRandomMove(int &row, int &col) {
